@@ -239,14 +239,19 @@ La culpa de todo es por las clases porque ni los 'struct', ni las 'enumeraciones
 
 ## Prioridades de las tareas
 • Las prioridades para las tareas son 3: alta, medio y baja.
-1. Una tarea alta tiene una prioridad por valor de orden de 25 y está destinada a procesos que tienen que ver con la respuesta de la app.
-• Cualquier tarea que esté interactuando con el hilo principal y esté modificando la UI y/o tenga al usuario a la espera de su conclusión (la florecita giratoria), deberá ser alta (high) para tener el máximo de prioridad posible.
-La prioridad `high` también tiene el nombre de `userInitiated` por compatibilidad con los valores que se usaban en GCD.
-2. El nivel por defecto es el medio (medium) que se establece para tareas que el usuario no sabe que se están ejecutando, como actualizaciones de datos en segundo plano, procesos de indexación, envío de métricas a una API REST, etc...
+1. Una `tarea alta` tiene una prioridad por valor de orden de 25 y está destinada a procesos que tienen que ver con la respuesta de la app.
+
+• Cualquier tarea que esté interactuando con el `hilo principal` y esté `modificando la UI` y/o tenga al usuario a la espera de su conclusión (la florecita giratoria), deberá ser `alta (high)` para tener el máximo de prioridad posible. <br> <br>
+La prioridad `high` también tiene el nombre de `userInitiated` por compatibilidad con los valores que se usaban en `GCD`.
+
+2. El `nivel por defecto es el medio` (medium) que se establece para tareas que el usuario no sabe que se están ejecutando, como actualizaciones de datos en segundo plano, procesos de indexación, envío de métricas a una API REST, etc...
+
 • Por retrocompatibilidad también es conocida como `utility` con un valor de 17.
-3. La tarea de menor prioridad es la baja (low), que representa que solo se ejecutará cuando no haya nada más en ese hilo (u otros) en prioridades mayores.
+
+3. La tarea de menor prioridad es la `baja (low)`, que representa que solo se ejecutará cuando no haya nada más en ese hilo (u otros) en prioridades mayores.  <br> <br>
 Por compatibilidad también se llama como `background` y tiene un valor de 9.
-4. Por último la no especificada o unspecified tiene un valor de 0 y no suele usarse.
+
+4. Por último la no especificada o `unspecified` tiene un valor de 0 y no suele usarse.
 
 ## Las herramientas en Swift 6
 
