@@ -20,8 +20,9 @@
 ## ¿Qué es la concurrencia de procesos y por qué es importante?
 1. La `concurrencia` es ejecutar más de una tarea a la vez.
 
-2. Su funcionamiento se basa en el concepto de `hilo (o thread)` donde cada hilo de ejecución de CPU o GPU ejecutan una tarea de forma independiente. <br>
-Tenemos un hilo que hace una ejecución, hay que pensar en la concurrencia como las vías de un tren, donde pueden circular varios trenes a la vez en diferentes vías en la misma dirección pero nunca más de uno en la misma vía al mismo tiempo. Es decir las vías son los hilos y los trenes las tareas, solo puede a ver un tarea en un hilo en un mismo instante pero pueden a ver varias tareas en varios hilos en ejecución en la misma dirección (incluso en paralelo) pero cada uno en un hilo diferente. Esa en la cuestión no puede estar dos tareas en el mismo hilo, solo una hilo puede albergar una única tarea en ejecución. Además existe una restricción básica que es que un mismo pasajero no puede ir al mismo tiempo en dos trenes que van en distintas vías. <br> <br>
+2. Su funcionamiento se basa en el concepto de `hilo (o thread)` donde cada hilo de ejecución de CPU o GPU ejecutan una tarea de forma independiente. <br> <br>
+Tenemos un hilo que hace una ejecución, hay que pensar en la concurrencia como las vías de un tren, donde pueden circular varios trenes a la vez en diferentes vías en la misma dirección pero nunca más de uno en la misma vía al mismo tiempo. <br> <br>
+Es decir, las vías son los hilos y los trenes las tareas, solo puede a ver un tarea en un hilo en un mismo instante pero pueden a ver varias tareas en varios hilos en ejecución en la misma dirección (incluso en paralelo) pero cada uno en un hilo diferente. Esa en la cuestión no puede estar dos tareas en el mismo hilo, solo una hilo puede albergar una única tarea en ejecución. Además existe una restricción básica que es que un mismo pasajero no puede ir al mismo tiempo en dos trenes que van en distintas vías. <br> <br>
 La concurrencia estricta evita eso, que un mismo pasajero (dato) este a al vez en distintas vias (hilos) y trenes (tareas) a la vez que van en la misma dirección, porque eso puede provocar errores e insconsistencia.
 
 <div align="center">
@@ -38,41 +39,51 @@ Es un componente de Cocoa en Objective-C, que es bastante abstracta y compleja d
 - `Async-Await`: compatible en una API incorporada a Swift en la versión 5.5 y que se hizo `retrocompatible` hasta versión 13 de iOS y el resto de sistemas del año 2019.
 
 ## Hilos y gestión de recursos
-* Cada núcleo de una CPU o GPU puede tener uno o varios hilos, según modelos y consumo. <br>
-*  En la arquitectura `ARM de Apple Silicon` cada `núcleo` maneja `un solo hilo de ejecución` para maximizar la eficienca energética. <br>
-Por lo tanto si mi Apple Silicon (M1, M2, M3..) tiene X núcleos tendra X hilos de ejecución. <br>
-* Al trabajar con múltiples hilos, si `añadimos una nueva tarea en concurrencia`, esta se `ejecutará de manera inmediata` sin importar qué otras tareas haya en otros hilos, siempre y cuando dicho `hilo este vacío`. Si no, esperará. <br>
+* Cada núcleo de una CPU o GPU puede tener uno o varios hilos, según modelos y consumo.
+
+*  En la arquitectura `ARM de Apple Silicon` cada `núcleo` maneja `un solo hilo de ejecución` para maximizar la eficienca energética.
+Por lo tanto si mi Apple Silicon (M1, M2, M3..) tiene X núcleos tendra X hilos de ejecución.
+
+* Al trabajar con múltiples hilos, si `añadimos una nueva tarea en concurrencia`, esta se `ejecutará de manera inmediata` sin importar qué otras tareas haya en otros hilos, siempre y cuando dicho `hilo este vacío`. Si no, esperará. <br> <br>
 Cuando nosotros trabajamos con multiples hilos la concurrencia funciona de tal manera que se encola, es decir se mete dentro de una cola y una vez esta en esa cola busca la forma de tener un hilo disponible, de forma que si lo tiene se va a ejecutar en el momento, pero si no lo tiene disponible porque todos los hilos estan ocupados tendra que esperar a que uno quede libre y asi lo comenzará a utilizar. <br>
-El número de hilos disponibles tambien puede depender por ejemplo de la bateria, por ejemplo si estamos en modo ahorro de energía en el dispositivo, se quitan hilos al sistema y esto provoca que la concurrencia sea menos potente. <br>
+El número de hilos disponibles tambien puede depender por ejemplo de la bateria, por ejemplo si estamos en modo ahorro de energía en el dispositivo, se quitan hilos al sistema y esto provoca que la concurrencia sea menos potente.
+
 * Cada `hilo es secuencial` y `no puede hacer más de una tarea` (operación) a la vez por lo tanto esa es la clave para tener la concurrencia estricta. La concurrencia se basa en que muchos hilos hacen tareas a la vez pero en cada hilo no puede tener más de una operación a la vez.
 
 ## La magia de Apple Silicon: la concurrencia
-- La gestión de `la concurrencia` en la mayoría de sistemas es un auténtico desastre pues solo es accesible por APIs a bajo nivel. <br>
-- La falta de formación en estos conceptos implica que la mayoría del software `use solo dos hilos`: el principal para todo, normalmente sobrecargado, y el secundario para llamadas de red que es creado por el sistema automáticamente y de forma transparente al desarrollador. <br>
-Mucha gente no utiliza concurrencia o no es consciente de que la esta utilizando. Cuando la gente usa un sistema operativo y este tiene una forma compleja de manejar la concurrencia de procesos al final yo no manejo esa concurrencia de procesos, al final me dedico a programar mi aplicación normal y luego hago llamadas de red y ya esta. Y como las llamadas de red que funcionan en concurrencia las crea el sistema por si solo, es totalmente transparente yo no soy conciente de que se esta usando concurrencia, de que hay un hilo que esta funcionando distinto y en paralelo y que esta haciendo una operación y que luego tengo que recuperar esa información. Normalmente no lo se porque yo resuelvo mis problemas del dia a dia de mi app y ya esta. <br>
-- La solución de Apple es tener `un gestor que analiza y determina el mejor destino` (a través de Machine Learning) en cada hilo para cada proceso de forma automática aunque todo esté programado para el hilo principal. <br>
+- La gestión de `la concurrencia` en la mayoría de sistemas es un auténtico desastre pues solo es accesible por APIs a bajo nivel.
+
+- La falta de formación en estos conceptos implica que la mayoría del software `use solo dos hilos`: el principal para todo, normalmente sobrecargado, y el secundario para llamadas de red que es creado por el sistema automáticamente y de forma transparente al desarrollador.
+Mucha gente no utiliza concurrencia o no es consciente de que la esta utilizando. Cuando la gente usa un sistema operativo y este tiene una forma compleja de manejar la concurrencia de procesos al final yo no manejo esa concurrencia de procesos, al final me dedico a programar mi aplicación normal y luego hago llamadas de red y ya esta. Y como las llamadas de red que funcionan en concurrencia las crea el sistema por si solo, es totalmente transparente yo no soy conciente de que se esta usando concurrencia, de que hay un hilo que esta funcionando distinto y en paralelo y que esta haciendo una operación y que luego tengo que recuperar esa información. Normalmente no lo se porque yo resuelvo mis problemas del dia a dia de mi app y ya esta.
+
+- La solución de Apple es tener `un gestor que analiza y determina el mejor destino` (a través de Machine Learning) en cada hilo para cada proceso de forma automática aunque todo esté programado para el hilo principal. <br> <br>
 Aunque tu no programes en concurrencia, Apple recoge las solicitudes y `crea concurrencia donde no esta programada` para que no vaya todo a los primeros hilos como sucede en Android o en Windows.
 
 ## Concurrencia Estricta
-- Al igual que Swift ya tiene formas en sus pilares fundacionales para evitar de forma automática gran parte de los errores que pueden provocarse en un lenguaje de programación, con la `versión 6` se incluye uno muy importante: el `data race`. <br>
-Swift tiene mucha caracteristicas que evitan gran parte de los errores que se tienen hoy en dia. Apple esta pasando todo a Swift. En Swift por ejemplo no existe el problema del `desbordamiento de buffer`, en Swift una cadena o un array no puede superar lo que se le ha definido, porque no se le define, es totalmente dinámico. En Swift `los errores de tipo dato incorrecto` no existen, los datos vacios estan prohibidos... <br>
-Apple ha metido dentro de ese control automatico por parte del lenguaje los `data race`. <br>
-- Dentro de cualquier lenguaje existen `datos mutables` cuyo acceso es compartido por cualquier recurso que quiera leerlos y/o escribirlos. <br>
-Los `data race` se forman cuando existen datos mutables (variables) que tienen un acceso compartido entre distintos hilos. Cuando `dos hilos distintos` van a buscar `el mismo dato, al mismo tiempo,` se genera una `desincronia`. Si dos procesos en dos hilos distintos ejecutandose a la vez de manera concurrente intentan acceder al mismo dato al mismo tiempo esa desincronía que provoca que el `dato se corrompa` y puede resultar fatal. Por ejemplo, que yo intente hacer dos sumas de '+1' y el resultado sea solo una de la sumas porque el dato origen se ha recogido dos veces. <br>
-- Swift 6, es sus errores de compilación dados en tiempo de codificación, detectará la existencia de cualquier dato de este tipo o acceso al mismo que pudiera provocar un data race: `no que lo vaya a hacer, que en dichas condiciones pueda darse`. <br>
+- Al igual que Swift ya tiene formas en sus pilares fundacionales para evitar de forma automática gran parte de los errores que pueden provocarse en un lenguaje de programación, con la `versión 6` se incluye uno muy importante: el `data race`. <br> <br>
+Swift tiene mucha caracteristicas que evitan gran parte de los errores que se tienen hoy en dia. Apple esta pasando todo a Swift. En Swift por ejemplo no existe el problema del `desbordamiento de buffer`, en Swift una cadena o un array no puede superar lo que se le ha definido, porque no se le define, es totalmente dinámico. En Swift `los errores de tipo dato incorrecto` no existen, los datos vacios estan prohibidos... <br> <br>
+Apple ha metido dentro de ese control automatico por parte del lenguaje los `data race`.
+
+- Dentro de cualquier lenguaje existen `datos mutables` cuyo acceso es compartido por cualquier recurso que quiera leerlos y/o escribirlos.<br> <br>
+Los `data race` se forman cuando existen datos mutables (variables) que tienen un acceso compartido entre distintos hilos. Cuando `dos hilos distintos` van a buscar `el mismo dato, al mismo tiempo,` se genera una `desincronia`. Si dos procesos en dos hilos distintos ejecutandose a la vez de manera concurrente intentan acceder al mismo dato al mismo tiempo esa desincronía que provoca que el `dato se corrompa` y puede resultar fatal. Por ejemplo, que yo intente hacer dos sumas de '+1' y el resultado sea solo una de la sumas porque el dato origen se ha recogido dos veces.
+
+- Swift 6, es sus errores de compilación dados en tiempo de codificación, detectará la existencia de cualquier dato de este tipo o acceso al mismo que pudiera provocar un data race: `no que lo vaya a hacer, que en dichas condiciones pueda darse`.
+
 - La forma de solucionar esto es crear `un bloqueo de acceso` de forma natural: si alguien intenta leer un dato, el que venga después tendrá que esperar a que el primero acabe. <br>
-Es decir, cuando vayas a `leer o escribir` un dato se debe de `bloquear` para que cuando `llegue otro` a hacer lo mismo tenga que esperar a que `el primero` termine para `desbloquearlo`. <br>
+Es decir, cuando vayas a `leer o escribir` un dato se debe de `bloquear` para que cuando `llegue otro` a hacer lo mismo tenga que esperar a que `el primero` termine para `desbloquearlo`.
+
 - Existen varias soluciones:
     1. Bloquear el `acceso a un dato a un solo hilo` en concreto (lo que provoca que su acceso sea `serializado`).
     2. Bloquear el `acceso desde cualquier hilo` hasta que ese hilo no haya terminado.
-    3. Gestionar el bloqueo de `los datos mutables individualmente`. <br>
+    3. Gestionar el bloqueo de `los datos mutables individualmente`.
+
 - La herramienta principal para poder hacer esto con `async-await` son los `actores`: clases preparadas para concurrencia (que no soportan herencia) que convierten en asíncrono (casi siempre no bloqueante) el acceso a métodos o propiedades en los mismos y con ello, obligan (con await) a esperar a todo el que quiera usarlo si alguien ya lo usa.
 
 * `Definición de actores`: maneja el acceso seguro a datos compartidos en un entorno concurrente, solo pueden ser accedidos desde un contexto asíncrono, esto obliga al código consumidor a usar await, asegurando que el acceso se coordine correctamente. Internamente, los actores aseguran que solo una tarea pueda acceder a su estado en un momento dado, sin necesidad de que el desarrollador maneje bloqueos manuales, al delegar la gestión del acceso concurrente al sistema de ejecución de Swift. Si el actor ya está ocupado ejecutando una tarea, cualquier otra tarea que intente acceder a él será pausada (suspendida) hasta que el actor esté disponible. Sin embargo, esto no bloquea los hilos en sí, ya que las tareas que esperan son manejadas por el sistema de ejecución asíncrona.
 
 ## Tipos de tareas y funcionamiento
 1. `Hilo principal (main thread)`: se encarga de la interfaz de usuario. Ejecuta las tareas de `forma síncrona y serializada`. Ejecuta la mayoria de operaciones que yo programo cuando no creo un contexto distinto. <br>
-Este hilo tiene 5 colas, en las que yo puedo poner cosas para que se inyecten al hilo principal. <br>
+Este hilo tiene 5 colas, en las que yo puedo poner cosas para que se inyecten al hilo principal. <br> <br>
 ¿Cómo funcionan estas colas? Imaginamos que tenemos 3 tareas que estan dentro del hilo principal.
 
 <div align="center">
