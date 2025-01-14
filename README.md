@@ -193,11 +193,11 @@ Imaginar que tenemos pdos hilos` y quiero lanzar una función que va a recupar e
 
 • `Pentium` incorporaba además `tres formas de optimizar` el uso de la CPU y conseguir con ello que los momentos en que la CPU no está haciendo nada durante un ciclo de reloj, pueda ser mejor aprovechada.
 
-    • La primera mejora es `la ejecución fuera de orden`: la CPU "desordenada" los micro-procesos en que se divide cada tarea y los ejecuta de forma agrupada por prioridad, guardando los resultados en `caché`.
+- La primera mejora es `la ejecución fuera de orden`: la CPU "desordenada" los micro-procesos en que se divide cada tarea y los ejecuta de forma agrupada por prioridad, guardando los resultados en `caché`.
 
-    • Lo que deriva en la segunda mejora: `la ejecución anticipada`. Una CPU puede procesar instrucciones (y sus micro-procesos) antes que "el tiempo real" necesite sus resultados, guardando el resultado en caché y luego solo leyendo de ahí.
+- Lo que deriva en la segunda mejora: `la ejecución anticipada`. Una CPU puede procesar instrucciones (y sus micro-procesos) antes que "el tiempo real" necesite sus resultados, guardando el resultado en caché y luego solo leyendo de ahí.
 
-    • La tercera mejora es `la ejecución especulativa`: la CPU ejecuta todo, aunque no tenga seguro si lo necesitará o no. Por ejemplo: una sentencia 'if' con su 'else'. La CPU procesará ambos ámbitos antes de saber si el resultado será 'true' o 'false'. Cuando lo sepa, irá a la caché a recoger el resultado apropiado y borrará el otro.
+- La tercera mejora es `la ejecución especulativa`: la CPU ejecuta todo, aunque no tenga seguro si lo necesitará o no. Por ejemplo: una sentencia 'if' con su 'else'. La CPU procesará ambos ámbitos antes de saber si el resultado será 'true' o 'false'. Cuando lo sepa, irá a la caché a recoger el resultado apropiado y borrará el otro.
 
 Esto `provoca el caos` y el problema de una `desincronía`. Ejemplo:
 
