@@ -100,7 +100,7 @@ Este hilo tiene 5 colas, en las que yo puedo poner cosas para que se inyecten al
 
 * Si marcamos una clase, struct, enumeración, método o propiedad como `@MainActor` lo estamos "atando" al `main thread` por lo que dicho método, propiedad o instancia que sea, solo será accesible en el hilo principal o instancia que sea, solo será accesible en el hilo principal y nada más y como hemos dicho este es hilo es secuencial y nos quita el problema de `los data race`.
 
-* Si yo tengo una operación realizandola en `segundo plano`. Por ejemplo una `tarea 4` que va a poner algo en el hilo principal, pero entendiendo que estoy trabajando en concurrencia, lo que sucede es que esa tarea 4, al entrar en una cola se inyecta después de la tarea que el hilo principal esta realizando. Por lo que el hilo principal cambia el orden de las tareas y coloca la nueva tarea (decorada con `@MainActor`) que cuando acabe seguira con la siguiente.
+* Si yo tengo una operación realizandola en `segundo plano`. Por ejemplo una `tarea 4` que va a poner algo en el hilo principal (esta decorada con `@MainActor`), pero entendiendo que estoy trabajando en concurrencia, lo que sucede es que esa tarea 4, al entrar en una cola se inyecta después de la tarea que el hilo principal esta realizando. Por lo que el hilo principal cambia el orden de las tareas y coloca la nueva tarea que cuando acabe seguira con la siguiente.
 
 <div align="center">
   <img src="img_explicacion/IMAGEN_2.png" alt="Imagen 2" width="600">
@@ -112,23 +112,25 @@ Este hilo tiene 5 colas, en las que yo puedo poner cosas para que se inyecten al
   <img src="img_explicacion/IMAGEN_3.png" alt="Imagen 3" width="600">
 </div> <br>
 
-* Esto no afecta al rendimiento porque se espera que dichas tareas inyectadas sean siempre ligeras para el sistema.
-
+* Esto no afecta al rendimiento porque se espera que dichas tareas inyectadas sean siempre ligeras para el sistema. <br> <br>
 
 Hay que entender que todos los hilos y no solo el principal sino cualquier hilo en segundo plano funcionan de manera serializada (una tras otra sin superponerse).
-- Todos los hilos funcionan demanera serializada ejecutan las tareas una a una, incluido la principal.
-- Pero cuando ponenmo distintas tareas en distintos hilos a la vez, se ejecutan en concurrencia, pero dentro de cada uno de sus hilos funcionan como serializadas.
+- Todos los `hilos` funcionan de `manera serializada`, ejecutan las tareas una a una, incluido la principal.
+
+- Pero cuando ponemos `distintas tareas en distintos hilos` a la vez, se ejecutan en `concurrencia`, pero dentro de cada uno de sus hilos funcionan como serializadas.
 
 <div align="center">
   <img src="img_explicacion/IMAGEN_4.png" alt="Imagen 4" width="600">
 </div> <br>
 
-- El hilo principal es elencargado de ejecutar la iterfaz de la app.
-Lo que no podemos olvidar es que no  podemos poner tareas lentas o pesadas sobre el hilo principal porque estamos aprando la interfaz de la aplicacion.
-- Si este encuentra una tarea pesada (más lenta), la UI dejará de responder correctamente.
-- Todo porque la tarea lenta parará la ejecución serializada del mismo hilo donde corre el código principal y con ello lainterfaz de nuestra app.
-- Este error es muy común entre los desarrolladores y provoca apps con mala respuesta y rendimiento.
-Cualquier proceso que sea lento siempre debe de estar en un contexto secundario (task) para poder hacerlo bien.
+- El `hilo principal` es el encargado de ejecutar la interfaz de la app. <br> <br>
+Lo que no podemos olvidar es que no podemos poner `tareas lentas o pesadas` sobre el hilo principal porque estamos `parando la interfaz de la aplicación`.
+- Si este encuentra una tarea pesada (más lenta), la `UI dejará de responder correctamente`.
+
+- Todo porque la tarea lenta parará la ejecución serializada del mismo hilo donde corre `el código principal` y con ello la interfaz de nuestra app.
+
+- Este error es muy común entre los desarrolladores y provoca apps con mala respuesta y rendimiento. <br> <br>
+Cualquier `proceso que sea lento` siempre debe de estar en un `contexto secundario (task)` para poder hacerlo bien.
 
 <div align="center">
   <img src="img_explicacion/IMAGEN_5.png" alt="Imagen 5" width="600">
@@ -140,10 +142,13 @@ SE PASAR A:
   <img src="img_explicacion/IMAGEN_6.png" alt="Imagen 6" width="600">
 </div> <br>
 
-- Las buenas prácticas nos dicen que tenemos mover esa tarea lenta a otro hilo funciona la UI de mejor manera ya que el hilo principal puede seguir avanzando sin problemas.
+- Las `buenas prácticas` nos dicen que tenemos `mover esa tarea lenta` a otro hilo funciona la UI de mejor manera ya que el hilo principal puede seguir avanzando sin problemas.
+
 - En ese otro hilo, fuera del main, podrá ejecutarse sin entorpecer a la interfaz ni a la app y lo único que nos interesa entonces es el resultado de dicha tarea lenta.
-- Una vez la tarea lenta termina, generamos una nueva tarea que se inyecta en la cola del hilo principal para que su resultado puede actuar sobre la interfaz de la app si ese era el propósito.
-- Gracias a las nuevas medidas de concurrencia estricta, ya no se puede refrescar un dato que esté en el hilo principal desde uno en segundo plano, un error muy común que generaba históricamente errores en tiempo de ejecución que muchas veces eran ignorandos por los desarrolladores.
+
+- Una vez la `tarea lenta termina`, generamos una `nueva tarea` que se `inyecta en la cola` del hilo principal para que su resultado puede actuar sobre la interfaz de la app si ese era el propósito.
+
+- Gracias a las nuevas medidas de `concurrencia estricta`, ya no se puede `refrescar un dato` que esté en el hilo principal desde uno en `segundo plano`, un error muy común que generaba históricamente errores en tiempo de ejecución que muchas veces eran ignorandos por los desarrolladores.
 
 ## Los 3 problemas de la concurrencia.
 La concurrencia presenta tres problemas que hay que tener presentes cuando se trabaja:
