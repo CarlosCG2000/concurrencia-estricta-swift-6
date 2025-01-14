@@ -254,13 +254,20 @@ Por compatibilidad también se llama como `background` y tiene un valor de 9.
 ## Las herramientas en Swift 6
 
 ### Los actores (estado mutable compartido)
-- Los actores son clases preparadas para asincronía.
-- Sus propiedades evitan el `data race` bloqueando el acceso a cualquier propiedad, por lo que obligan al uso de sus instancias dentro de un contexto Task o cuando atamos un método o clase a un actor global.
-- En la propia definición del actor, la protección a la concurrencia es implícita y no hay que programarla, no hace falta poner async-await, ni nada.
-- Todos las propiedades mutables y los métodos que acceden a las mismas están protegidos por defecto con aislamiento y protección de su contexto de forma automática.
-- Pero cuando creamos una instancia de un actor, el acceso a cualquier propiedad mutable o método que acceda a estas se vuelve de acceso asíncrono, siempre en un Task.
-- Así evita que cuando dos procesos intenten leer a la vez un dato, puedan conseguirlo porque uno de ellos siempre queda a la espera que el otro termine.
-- El actor es el ejemplo perfecto de cómo pasar un dato de un contexto a otro: usando para su acceso un await usado como elemento asíncrono.
+
+- Los `actores` son clases preparadas para `asincronía`.
+
+- Sus propiedades evitan el `data race` bloqueando el acceso a cualquier propiedad, por lo que obligan al uso de sus instancias dentro de un contexto `Task` o cuando atamos un método o clase a un `actor global`.
+
+- En la propia definición del actor, la protección a `la concurrencia es implícita` y no hay que programarla, `no` hace falta poner `async-await`, ni nada.
+
+- Todos las propiedades mutables y los métodos que acceden a las mismas están protegidos por defecto con `aislamiento` y protección de su contexto de forma automática.
+
+- Pero cuando creamos una instancia de un `actor`, el acceso a cualquier propiedad mutable o método que acceda a estas se vuelve de `acceso asíncrono`, siempre en un `Task`.
+
+- Así evita que cuando `dos procesos` intenten leer a la vez un dato, puedan conseguirlo porque uno de ellos siempre queda a la `espera` que el otro termine.
+
+- El `actor` es el ejemplo perfecto de cómo pasar un dato de un `contexto a otro`: usando para su acceso un `await` usado como elemento asíncrono.
 
 Ejemplo de código:
 ```js
@@ -281,10 +288,10 @@ print(counter.increment()) // Resultado: 1
 print(counter.increment()) // Resultado: 2
 ```
 
-Tengo un clase con un variable de valor 0 y con una funcion de incremente que a demás devuelve dicho incremento y me creo luego la instancia de la clase.
-Si yo ejecuto esto, va a funcionar bien, la primera ejecución devolvera 1 y la segunda 2.
+Tengo un clase con un variable de valor 0 y con una funcion de incremento que a demás devuelve dicho incremento y me creo luego la instancia de la clase.
+Si yo ejecuto esto, va a funcionar bien, la primera ejecución devolvera 1 y la segunda 2. <br> <br>
 Pero si cada uno de estos print se ejecutaran en concurrencia en dos hilos distintos entonces ya no porque podria pasar que devolvieran dos 1 ó un 1 y un 2 ó un 2 y un 1.
-Por ello la solucion de esto es convertirlo en un actor.
+Por ello la solución de esto es convertirlo en un `actor`.
 
 ```js
 actor Counter {
@@ -310,12 +317,15 @@ Task(priority: .low) {
 }
 ```
 
-Sigue siendo una clase no tengo que cambiar ninguna linea de código pero en ese momento ya no podemos acceder al método 'value' ni 'increment' si no es dentro de un entorno de una tarea (Task) con un await.
+Sigue siendo una clase no tengo que cambiar ninguna linea de código pero en ese momento ya no podemos acceder al método 'value' ni 'increment' si no es dentro de un entorno de una `tarea` (Task) con un `await` ya que los `actores` son `async` de manera implicita.
 
-• Un actor está creado para controlar un estado mutable compartido.
-• Podemos entenderlo como un singleton con protección contra data races.
-• Todas las propiedades y métodos se convierten en asíncronas como miembros de instancia.
-• Usamos await para que espere en una cola serializada el acceso a la propiedad.
+• Un `actor` está creado para controlar un estado mutable compartido.
+
+• Podemos entenderlo como `un singleton` con `protección` contra `data races`.
+
+• Todas las propiedades y métodos se `convierten en asíncronas` como miembros de instancia.
+
+• Usamos `await` para que espere en una `cola serializada` el acceso a la propiedad.
 
 ¿Y si tenemos un método que no accede a ninguna variable? Hay que marcarlo como `nonisolated` para que permita ejecutar ese método desde un contexto cualquiera sin tener que estar dentro de un Task o de una función de tipo Async.
 
