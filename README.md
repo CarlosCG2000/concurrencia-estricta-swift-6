@@ -215,18 +215,27 @@ Esto `provoca el caos` y el problema de una `desincronía`. Ejemplo:
   <img src="img_explicacion/IMAGEN_8.png" alt="Imagen 8" width="600">
 </div> <br>
 
-• Swift 6 prevé los escenarios donde puede darse un data race y los convierte en errores. No detecta que los haya porque es imposible: solo su posibilidad en dicho escenario.
-• Si usamos una variable global (mutable) tendremos un error. Es decir si ponemos un 'var' a lo loco en mitad de la nada sin estar dentro de un ambito, ya tengo el primer error porque a esa variable puede acceder cualquiera.
-• El patrón singleton que permite pasar a través de él y la modificación de propiedades mutables, también es un error si no aislamos su contexto.
-• Si accedemos a un dato mutable desde un closure que captura la instancia para su integridad, igualmente error. Incluso entre el closure y otro dentro del mismo.
-Si envias clausuras (closure) 'self.' porque puede a ver un 'data race', porque el sistema no sabe si hay otro proceso de la misma clase que va a tocar ese dato a la vez que el proceso en concurrencia.
-• Si intentamos acceder a un dato atado a un hilo (por ejemplo con @MainActor), como el principal, desde otro hilo distinto: error. Ningún dato es accesible desde hilos distintos al "atado" de forma directa.
-• Podemos usar actores para obligar a que el acceso a las propiedades esté bloqueado mientras se usan. O actores globales para atar datos a contextos.
-• O podemos crear nuestras propias clases que garanticen la seguridad de sus datos mutables entre distintos contextos y conformarlas al protocolo Sendable.
-• Todos los closures que capturen datos fuera de sí mismo, están definidos como @Sendable, por lo que no permitirán el acceso no seguro a datos mutables.
-• También podemos usar los métodos genéricos de bajo nivel Mutex o NSLock que permiten bloquear datos y liberarlos programáticamente.
+• `Swift 6` prevé los escenarios donde puede darse un `data race` y los convierte en errores. `No detecta que los haya porque es imposible: solo su posibilidad en dicho escenario`.
 
-La culpa de todo es por las clases porque ni los 'struct', ni las 'enumeraciones' sufren de data races, solo las clases porque son datos por referencia.
+• Si usamos una `variable global (mutable)` tendremos un error. Es decir si ponemos un 'var' a lo loco en mitad de la nada sin estar dentro de un ambito, ya tengo el primer error porque a esa variable puede acceder cualquiera.
+
+• El patrón `singleton` que permite pasar a través de él y la modificación de propiedades mutables, también es un error si no aislamos su contexto.
+
+• Si accedemos a un `dato mutable` desde un `closure` que captura la instancia para su integridad, igualmente error. Incluso entre el closure y otro dentro del mismo.
+
+Si envias `clausuras (closure)` 'self.' porque puede a ver un 'data race', porque el sistema no sabe si hay otro proceso de la misma clase que va a tocar ese dato a la vez que el proceso en concurrencia.
+
+• Si intentamos acceder a un dato atado a un hilo, como el principal (con `@MainActor`), desde otro hilo distinto dará error. Ningún dato es accesible desde hilos distintos al "atado" de forma directa.
+
+• Podemos usar `actores` para obligar a que el acceso a las propiedades esté bloqueado mientras se usan. O `actores globales` para atar datos a contextos.
+
+• O podemos crear `nuestras propias clases` que garanticen la seguridad de sus datos mutables entre distintos contextos y conformarlas al `protocolo Sendable`.
+
+• Todos los `closures` que capturen datos fuera de sí mismo, están definidos como `@Sendable`, por lo que no permitirán el acceso no seguro a datos mutables.
+
+• También podemos usar `los métodos genéricos` de bajo nivel `Mutex` o `NSLock` que permiten bloquear datos y liberarlos programáticamente.
+
+La culpa de todo es por las clases porque ni los 'struct', ni las 'enumeraciones' sufren de `data races`, solo las clases porque son datos por referencia.
 
 ## Prioridades de las tareas
 • Las prioridades para las tareas son 3: alta, medio y baja.
