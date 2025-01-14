@@ -150,7 +150,7 @@ SE PASAR A:
 
 - Gracias a las nuevas medidas de `concurrencia estricta`, ya no se puede `refrescar un dato` que esté en el hilo principal desde uno en `segundo plano`, un error muy común que generaba históricamente errores en tiempo de ejecución que muchas veces eran ignorandos por los desarrolladores.
 
-## Los 3 problemas de la concurrencia.
+## Los 3 problemas de la concurrencia
 La concurrencia presenta tres problemas que hay que tener presentes cuando se trabaja:
 1. Data race (carreras de datos): esto es l que intnetamos evitar con la concurrencia estricta. Los dos siguientes puntos son consecuencia de este punto.
 2. Inversión de la prioridad
