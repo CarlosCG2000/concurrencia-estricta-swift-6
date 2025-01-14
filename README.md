@@ -357,14 +357,14 @@ print(myActor.description()) // No requiere await
 ```
 
 ### Actores globales (`@Globalactor`)
-• Un actor global nos permite generar atributos del lenguaje basados en un patrón singleton pero usando un actor en vez de una clase.
+• Un `actor global` nos permite generar atributos del lenguaje basados en un `patrón singleton` pero usando un `actor` en vez de una clase.
 
-• Puede ser usado como instancia para acceder a las propiedades o métodos del actor que contiene (a través del singleton) o como atributo de cualquier clase, struct, método o propiedad y "atándola" al hilo del actor global. <br> <br>
+• Puede ser usado como `instancia` para acceder a las propiedades o métodos del actor que contiene (a través del singleton) o como atributo de cualquier clase, struct, método o propiedad y "atándola" al hilo del `actor global`. <br> <br>
 Al hacer esto, estamos impidiendo que nada que no esté atado a dicho actor global pueda ser usado en otro contexto distinto.
 
-• Al atar algo a un actor global, estamos previniendo de forma efectiva un data race, porque estamos aislando este a un hilo.
+• Al atar algo a un actor global, estamos previniendo de forma efectiva un `data race`, porque estamos aislando este a un hilo.
 
-• Todos los actores funcionan en segundo plano, y actuarán de cara a cualquier elemento anotado como si fueran parte del actor, prescindiendo del uso de await.
+• Todos los `actores` funcionan en `segundo plano`, y actuarán de cara a cualquier elemento anotado como si fueran parte del actor, prescindiendo del uso de await.
 
 • La base de este actor global es el mismo actor como singleton solo que luego permite anotar cualquier cosa como parte del mismo.
 
