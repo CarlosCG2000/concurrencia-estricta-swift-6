@@ -110,7 +110,7 @@ Este hilo tiene 5 colas, en las que yo puedo poner cosas para que se inyecten al
 
 <div align="center">
   <img src="img_explicacion/IMAGEN_3.png" alt="Imagen 3" width="600">
-</div> <br>
+</div>
 
 * Esto no afecta al rendimiento porque se espera que dichas tareas inyectadas sean siempre ligeras para el sistema. <br> <br>
 
@@ -174,29 +174,42 @@ La concurrencia presenta tres problemas que hay que tener presentes cuando se tr
 • O podemos usar `APIs de bajo nivel` como `NSLock` o `Mutex`, para bloquear ciertos datos de manera segura, sin tener que hacerlos asíncronos (bloquean el hilo, a diferenca de con `async-await` los hilos no se bloquean se van liberando según el funcionamiento). Y luego poder desbloquearlo con `setters` y `getters`.
 
 ## Data Race (condición de carrera)
-Imaginar que tenemos dos hilos y quiero lanzar una función que va a recupar el valor que esta en memoria que es un 1 para sumarle 1:
-1. Tenemos dos hilos, pero usamos solo uno para lanzar dos veces la misma función, una tras otra..
-2. Aunque yo haga un vi += 1, esto se descompone en varias instrucciones: lectura, almacenamiento en memoria, colocación en el registro de entrada de la CPU del valor actual de v1 y el 1, petición de la operación sumar, recoger el resultado, ponerlo en memoria, cambiar el puntero que apunta al antiguo valor de vl a un nuevo lugar en memoria con el nuevo valor de v1 y fin.
-3. Como vemos, cada operación que hacemos en Swift supone varias instrucciones en código máquina.
-4. Pero si ejecutamos la función en un solo hilo, de forma serializada y la segunda ejecución nunca inicia hasta que acaba la primera, no tendremos ningún problema.
+Imaginar que tenemos pdos hilos` y quiero lanzar una función que va a recupar el valor que esta en memoria que es un 1 para sumarle 1:
+1. Tenemos dos hilos, pero usamos solo uno para lanzar dos veces la misma función, una tras otra.
+
+2. Aunque yo haga un v1 += 1, esto se descompone en varias instrucciones: lectura, almacenamiento en memoria, colocación en el registro de entrada de la CPU del valor actual de v1 y el 1, petición de la operación sumar, recoger el resultado, ponerlo en memoria, cambiar el puntero que apunta al antiguo valor de v1 a un nuevo lugar en memoria con el nuevo valor de v1 y fin.
+
+3. Como vemos, `cada operación` que hacemos en Swift supone `varias instrucciones` en código máquina.
+
+4. Pero si ejecutamos la función en `un solo hilo`, de forma `serializada`, la segunda ejecución nunca inicia hasta que acaba la primera, no tendremos ningún problema.
 
 <div align="center">
   <img src="img_explicacion/IMAGEN_7.png" alt="Imagen 7" width="600">
 </div> <br>
 
-• Hasta 1995 las CPUs no podían trabajar en multitarea real. Tenían un solo núcleo y aprovechaban las pausas entre procesos (donde la CPU estaba "desocupada") para "colar" otros procesos y que "simulara" una multitarea que no era.
-• En 1995 Intel revoluciona los chips con el uso del multithreading, un mismo núcleo tiene varios hilos en paralelo que permiten realizar tareas de forma simultánea. Fue con el Intel Pentium Posteriormente los Core iX introducirían el concepto multi-núcleo.
-• Pentium incorporaba además tres formas de optimizar el uso de la CPU y conseguir con ello que los momentos en que la CPU no está haciendo nada durante un ciclo de reloj, pueda ser mejor aprovechada.
-• La primera mejora es la ejecución fuera de orden: la CPU "desordenada" los micro-procesos en que se divide cada tarea y los ejecuta de forma agrupada por prioridad, guardando los resultados en caché.
-• Lo que deriva en la segunda mejora: la ejecución anticipada. Una CPU puede procesar instrucciones (y sus micro-procesos) antes que "el tiempo real" necesite sus resultados, guardando el resultado en caché y luego solo leyendo de ahí.
-• La tercera mejora es la ejecución especulativa: la CPU ejecuta todo, aunque no tenga seguro si lo necesitará o no. Por ejemplo: una sentencia if con su else. La CPU procesará ambos ámbitos antes de saber si el resultado será true o false. Cuando lo sepa, irá a la caché a recoger el resultado apropiado y borrará el otro.
+• Hasta `1995` las CPUs no podían trabajar en `multitarea real`. Tenían un solo núcleo y aprovechaban las pausas entre procesos (donde la CPU estaba "desocupada") para "colar" otros procesos y que "simulara" una multitarea que no era.
 
-Esto provoca el caos y el problema de una desincronia. Ejemplo:
-• Si ejecutamos la misma función de manera concurrente en dos hilos distintos, el funcionamiento de la CPU creará de forma aleatoria la condición de carrera al dividir los procesos y alternarlos entre ambos hilos.
-• Esto implica que el hilo 1 y el hilo 2 están accediendo al valor en memoria de forma descoordinada (desincronizada). Ambos hilos leen el 1 antes de modificarlo para iniciar su propio proceso de aumentar el valor. Se viene el desastre.
-• En el caso de ARM, solo un proceso de un hilo puede pasar a la vez por el gestor para ahorrar energía. En Intel pueden pasar varios a la vez desde distintos hilos. Pero en ambos casos, el problema de desincronía es inevitable.
-• Escribimos en memoria de forma no sincronizada el mismo resultado que parte de la misma lectura porque un proceso no esperó al otro. Todo mal.
-• Dos procesos que deberían haber ejecutado dos sumas de 1 y dar como resultado 3, en realidad han devuelto ambos 2. Tenemos un data race. Porque no se han esperado los dos procesos se deberian haber esperado el uno al otro. (Y esto es lo que intenta solucionar Swift 6 con la concurrencia estricta).
+• En `1995` Intel revoluciona los chips con el uso del `multithreading`, un mismo núcleo tiene varios hilos en paralelo que permiten realizar tareas de forma simultánea. Fue con el Intel Pentium posteriormente con los Core I cuando introducirían el concepto `multi-núcleo`.
+
+• `Pentium` incorporaba además `tres formas de optimizar` el uso de la CPU y conseguir con ello que los momentos en que la CPU no está haciendo nada durante un ciclo de reloj, pueda ser mejor aprovechada.
+
+    • La primera mejora es `la ejecución fuera de orden`: la CPU "desordenada" los micro-procesos en que se divide cada tarea y los ejecuta de forma agrupada por prioridad, guardando los resultados en `caché`.
+
+    • Lo que deriva en la segunda mejora: `la ejecución anticipada`. Una CPU puede procesar instrucciones (y sus micro-procesos) antes que "el tiempo real" necesite sus resultados, guardando el resultado en caché y luego solo leyendo de ahí.
+
+    • La tercera mejora es `la ejecución especulativa`: la CPU ejecuta todo, aunque no tenga seguro si lo necesitará o no. Por ejemplo: una sentencia 'if' con su 'else'. La CPU procesará ambos ámbitos antes de saber si el resultado será 'true' o 'false'. Cuando lo sepa, irá a la caché a recoger el resultado apropiado y borrará el otro.
+
+Esto `provoca el caos` y el problema de una `desincronía`. Ejemplo:
+
+• Si ejecutamos la `misma función` de manera concurrente en `dos hilos distintos`, el funcionamiento de la CPU creará de forma aleatoria `la condición de carrera` al dividir los procesos y alternarlos entre ambos hilos.
+
+• Esto implica que el `hilo 1` y el `hilo 2` están accediendo al valor en memoria de forma `descoordinada` (desincronizada). Ambos hilos leen el 1 antes de modificarlo para iniciar su propio proceso de aumentar el valor. Se viene el desastre.
+
+• En el caso de `ARM`, solo un proceso de un hilo puede pasar a la vez por el gestor para ahorrar energía. En Intel pueden pasar varios a la vez desde distintos hilos. Pero en ambos casos, el problema de desincronía es inevitable.
+
+• Escribimos en memoria de forma `no sincronizada` el mismo resultado que parte de la misma lectura porque un proceso no esperó al otro. Todo mal.
+
+• Dos procesos que deberían haber ejecutado dos sumas de 1 y dar como resultado 3, en realidad han devuelto ambos 2. Tenemos un `data race`. Porque no se han esperado los dos procesos se deberian haber esperado el uno al otro. ¡Y esto es lo que intenta solucionar Swift 6 con la concurrencia estricta!
 
 <div align="center">
   <img src="img_explicacion/IMAGEN_8.png" alt="Imagen 8" width="600">
