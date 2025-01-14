@@ -45,7 +45,7 @@ Es un componente de Cocoa en Objective-C, que es bastante abstracta y compleja d
 Por lo tanto si mi Apple Silicon (M1, M2, M3..) tiene X núcleos tendra X hilos de ejecución.
 
 * Al trabajar con múltiples hilos, si `añadimos una nueva tarea en concurrencia`, esta se `ejecutará de manera inmediata` sin importar qué otras tareas haya en otros hilos, siempre y cuando dicho `hilo este vacío`. Si no, esperará. <br> <br>
-Cuando nosotros trabajamos con multiples hilos la concurrencia funciona de tal manera que se encola, es decir se mete dentro de una cola y una vez esta en esa cola busca la forma de tener un hilo disponible, de forma que si lo tiene se va a ejecutar en el momento, pero si no lo tiene disponible porque todos los hilos estan ocupados tendra que esperar a que uno quede libre y asi lo comenzará a utilizar. <br>
+Cuando nosotros trabajamos con multiples hilos la concurrencia funciona de tal manera que se encola, es decir se mete dentro de una cola y una vez esta en esa cola busca la forma de tener un hilo disponible, de forma que si lo tiene se va a ejecutar en el momento, pero si no lo tiene disponible porque todos los hilos estan ocupados tendra que esperar a que uno quede libre y asi lo comenzará a utilizar. <br> <br>
 El número de hilos disponibles tambien puede depender por ejemplo de la bateria, por ejemplo si estamos en modo ahorro de energía en el dispositivo, se quitan hilos al sistema y esto provoca que la concurrencia sea menos potente.
 
 * Cada `hilo es secuencial` y `no puede hacer más de una tarea` (operación) a la vez por lo tanto esa es la clave para tener la concurrencia estricta. La concurrencia se basa en que muchos hilos hacen tareas a la vez pero en cada hilo no puede tener más de una operación a la vez.
@@ -53,7 +53,7 @@ El número de hilos disponibles tambien puede depender por ejemplo de la bateria
 ## La magia de Apple Silicon: la concurrencia
 - La gestión de `la concurrencia` en la mayoría de sistemas es un auténtico desastre pues solo es accesible por APIs a bajo nivel.
 
-- La falta de formación en estos conceptos implica que la mayoría del software `use solo dos hilos`: el principal para todo, normalmente sobrecargado, y el secundario para llamadas de red que es creado por el sistema automáticamente y de forma transparente al desarrollador.
+- La falta de formación en estos conceptos implica que la mayoría del software `use solo dos hilos`: el principal para todo, normalmente sobrecargado, y el secundario para llamadas de red que es creado por el sistema automáticamente y de forma transparente al desarrollador. <br> <br>
 Mucha gente no utiliza concurrencia o no es consciente de que la esta utilizando. Cuando la gente usa un sistema operativo y este tiene una forma compleja de manejar la concurrencia de procesos al final yo no manejo esa concurrencia de procesos, al final me dedico a programar mi aplicación normal y luego hago llamadas de red y ya esta. Y como las llamadas de red que funcionan en concurrencia las crea el sistema por si solo, es totalmente transparente yo no soy conciente de que se esta usando concurrencia, de que hay un hilo que esta funcionando distinto y en paralelo y que esta haciendo una operación y que luego tengo que recuperar esa información. Normalmente no lo se porque yo resuelvo mis problemas del dia a dia de mi app y ya esta.
 
 - La solución de Apple es tener `un gestor que analiza y determina el mejor destino` (a través de Machine Learning) en cada hilo para cada proceso de forma automática aunque todo esté programado para el hilo principal. <br> <br>
@@ -74,7 +74,9 @@ Es decir, cuando vayas a `leer o escribir` un dato se debe de `bloquear` para qu
 
 - Existen varias soluciones:
     1. Bloquear el `acceso a un dato a un solo hilo` en concreto (lo que provoca que su acceso sea `serializado`).
+
     2. Bloquear el `acceso desde cualquier hilo` hasta que ese hilo no haya terminado.
+
     3. Gestionar el bloqueo de `los datos mutables individualmente`.
 
 - La herramienta principal para poder hacer esto con `async-await` son los `actores`: clases preparadas para concurrencia (que no soportan herencia) que convierten en asíncrono (casi siempre no bloqueante) el acceso a métodos o propiedades en los mismos y con ello, obligan (con await) a esperar a todo el que quiera usarlo si alguien ya lo usa.
@@ -91,20 +93,27 @@ Este hilo tiene 5 colas, en las que yo puedo poner cosas para que se inyecten al
 </div> <br>
 
 * La tarea 2 espera a que la 1 finalice.
+
 * Las tareas se ejecutan secuencialmente, una tras otra: serializadamente.
+
 * El hilo principal tiene 5 colas, que sirven para introducir tareas serializadas (individuales).
+
 * Si marcamos una clase, struct, enumeración, método o propiedad como `@MainActor` lo estamos "atando" al `main thread` por lo que dicho método, propiedad o instancia que sea, solo será accesible en el hilo principal o instancia que sea, solo será accesible en el hilo principal y nada más y como hemos dicho este es hilo es secuencial y nos quita el problema de `los data race`.
-* Si yo tengo una operación realizandola en segundo plano. Por ejemplo una tarea 4 que va a poner algo en el hilo principal pero estoy trabajando en concurrencia, lo que sucede es que esa tarea 4, alentrar en una cola se inyecta antes de la siguiente tarea que elhilo principal esta realizando.Por lo que el hilo principal cambia el orden de las tareas y coloca la  nueva tarea que cuando acabe seguira con la siguente.
-* De esta forma respeta la serialización del hilo (tareas una tras otra) pero puede ejecutar tareas "no esperadas".
-* Esto no afecta al rendimiento porque se espera que dichas tareas inyectadas sean siempre ligeras para el sistema.
+
+* Si yo tengo una operación realizandola en `segundo plano`. Por ejemplo una `tarea 4` que va a poner algo en el hilo principal, pero entendiendo que estoy trabajando en concurrencia, lo que sucede es que esa tarea 4, al entrar en una cola se inyecta después de la tarea que el hilo principal esta realizando. Por lo que el hilo principal cambia el orden de las tareas y coloca la nueva tarea (decorada con `@MainActor`) que cuando acabe seguira con la siguiente.
 
 <div align="center">
   <img src="img_explicacion/IMAGEN_2.png" alt="Imagen 2" width="600">
 </div> <br>
 
+* De esta forma respeta la serialización del hilo (tareas una tras otra) pero puede ejecutar tareas "no esperadas".
+
 <div align="center">
   <img src="img_explicacion/IMAGEN_3.png" alt="Imagen 3" width="600">
 </div> <br>
+
+* Esto no afecta al rendimiento porque se espera que dichas tareas inyectadas sean siempre ligeras para el sistema.
+
 
 Hay que entender que todos los hilos y no solo el principal sino cualquier hilo en segundo plano funcionan de manera serializada (una tras otra sin superponerse).
 - Todos los hilos funcionan demanera serializada ejecutan las tareas una a una, incluido la principal.
