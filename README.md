@@ -1,7 +1,7 @@
 
 # Concurrencia Estricta en Swift 6
 
-## Recordatorio inicial:
+## Recordatorio inicial
 | **Término**      | **¿Bloquea?**        | **Descripción**                                                                                       |
 |-------------------|----------------------|-------------------------------------------------------------------------------------------------------|
 | **Síncrono**      | Generalmente sí      | El hilo espera a que la operación termine antes de continuar.                                         |
@@ -21,7 +21,7 @@
 1. La `concurrencia` es ejecutar más de una tarea a la vez.
 
 2. Su funcionamiento se basa en el concepto de `hilo (o thread)` donde cada hilo de ejecución de CPU o GPU ejecutan una tarea de forma independiente. <br>
-Tenemos un hilo que hace una ejecución, hay que pensar en la concurrencia como las vías de un tren, donde pueden circular varios trenes a la vez en diferentes vías en la misma dirección pero nunca más de uno en la misma vía al mismo tiempo. Es decir las vías son los hilos y los trenes las tareas, solo puede a ver un tarea en un hilo en un mismo instante pero pueden a ver varias tareas en varios hilos en ejecución en la misma dirección (incluso en paralelo) pero cada uno en un hilo diferente. Esa en la cuestión no puede estar dos tareas en el mismo hilo, solo una hilo puede albergar una única tarea en ejecución. Además existe una restricción básica que es que un mismo pasajero no puede ir al mismo tiempo en dos trenes que van en distintas vías. <br>
+Tenemos un hilo que hace una ejecución, hay que pensar en la concurrencia como las vías de un tren, donde pueden circular varios trenes a la vez en diferentes vías en la misma dirección pero nunca más de uno en la misma vía al mismo tiempo. Es decir las vías son los hilos y los trenes las tareas, solo puede a ver un tarea en un hilo en un mismo instante pero pueden a ver varias tareas en varios hilos en ejecución en la misma dirección (incluso en paralelo) pero cada uno en un hilo diferente. Esa en la cuestión no puede estar dos tareas en el mismo hilo, solo una hilo puede albergar una única tarea en ejecución. Además existe una restricción básica que es que un mismo pasajero no puede ir al mismo tiempo en dos trenes que van en distintas vías. <br> <br>
 La concurrencia estricta evita eso, que un mismo pasajero (dato) este a al vez en distintas vias (hilos) y trenes (tareas) a la vez que van en la misma dirección, porque eso puede provocar errores e insconsistencia.
 
 <div align="center">
@@ -30,9 +30,11 @@ La concurrencia estricta evita eso, que un mismo pasajero (dato) este a al vez e
 
 3. En sistemas Apple la concurrencia se gestiona con tres posibles APIs (o librerías):
 - `GCD (Grand Central Dispatch)`: librería oficial de Apple en Swift.
-Es una API en C, que pertenece al lenguaje Swift en código abierto y ha sido la solución durante los primeros años del lenguaje. <br>
+Es una API en C, que pertenece al lenguaje Swift en código abierto y ha sido la solución durante los primeros años del lenguaje.
+
 - `Operaciones (NSOperations)`: librería con Objective-C.
-Es un componente de Cocoa en Objective-C, que es bastante abstracta y compleja de usar (y casi nadie la conoce). <br>
+Es un componente de Cocoa en Objective-C, que es bastante abstracta y compleja de usar (y casi nadie la conoce).
+
 - `Async-Await`: compatible en una API incorporada a Swift en la versión 5.5 y que se hizo `retrocompatible` hasta versión 13 de iOS y el resto de sistemas del año 2019.
 
 ## Hilos y gestión de recursos
