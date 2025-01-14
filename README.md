@@ -366,15 +366,15 @@ Al hacer esto, estamos impidiendo que nada que no esté atado a dicho actor glob
 
 • Todos los `actores` funcionan en `segundo plano`, y actuarán de cara a cualquier elemento anotado como si fueran parte del actor, prescindiendo del uso de await.
 
-• La base de este actor global es el mismo actor como singleton solo que luego permite anotar cualquier cosa como parte del mismo.
+• La base de este `actor global` es el mismo actor como singleton solo que luego permite anotar cualquier cosa como parte del mismo.
 
 • O puede ser otro actor completo, al que metemos a través del singleton para usarlo con propiedades y métodos del mismo que nos permitan reutilizar código más seguro.
 
-• La herencia del contexto del actor global es jerárquica: si marcamos una clase con un actor global, todas sus propiedades y métodos heredarán ese contexto automáticamente, a menos que se especifique lo contrario con nonisolated.
+• La herencia del contexto del `actor global` es jerárquica: si marcamos una clase con un actor global, todas sus propiedades y métodos heredarán ese contexto automáticamente, a menos que se especifique lo contrario con `nonisolated`.
 
-• A diferencia de los actores regulares que solo protegen sus propias propiedades, un actor global puede proteger cualquier código en cualquier parte de la aplicación, proporcionando un mecanismo de sincronización a nivel de sistema.
+• A diferencia de los `actores regulares` que solo protegen sus propias propiedades, un `actor global` puede proteger cualquier código en cualquier parte de la aplicación, proporcionando un mecanismo de sincronización a nivel de sistema.
 
-Esto seria un error porque aunque no se utilice una variable, si podria haberla y como el sistema no lo sabe hasta que se ejecuta daria error
+Esto seria un error porque aunque no se utilice una variable, si podria haberla y como el sistema no lo sabe hasta que se ejecuta daria error.
 
 ```js
 class APIActor {
@@ -387,9 +387,9 @@ class APIActor {
 }
 ```
 
-Solución (cambiar class por actor):
-Y además ahora si quier acceder al método 'fetchEmployees' tengo que acceder con un await porque es una instancia de un actor.
-Pero hasta que vengo y le pongo arriba `globalActor` en ese momento yo puedo llevarme el  método 'fetchEmployees' a una clase distinta y puedo marcar esa clase como `@APIActor` (@nombreActor). Esto seria como si se metieran dentro del actor APIActor dentro de la proteccion del método 'shared', pero con la ventaja de que el método 'fetchEmployees' puede acceder a las propiedades que pertenezcan al mismo contexto APIActor sin tener que poner await,lo hace d eforma segura.
+Solución (cambiar `class` por `actor`): <br> <br>
+Y además ahora si quiero acceder al método 'fetchEmployees' tengo que acceder con un `await` porque es una instancia de un `actor`. <br> <br>
+Pero hasta que vengo y le pongo arriba `globalActor` en ese momento yo puedo llevarme el método 'fetchEmployees' a una clase distinta y puedo marcar esa clase como `@APIActor` (`@nombreActor`). Esto seria como si se metieran dentro del actor `APIActor` dentro de la protección del método 'shared', pero con la ventaja de que el método 'fetchEmployees' puede acceder a las propiedades que pertenezcan al mismo contexto `APIActor` sin tener que poner `await`, lo hace de forma segura.
 
 ```js
 @globalActor
@@ -406,9 +406,10 @@ final class EmployeeAPI {
 }
 ```
 
-Que pasa ahora tengo mi VM (View Model) que tiene mi '@Observable' y este esta unido al '@MainActor' porque la interfaz va en el '@MainActor' y el array de empleados va en el '@MainActor' porque se va a mostrar en pantalla y la API que es dodne voy a recuperar la información que es lo que viene de 'APIActor'.
-Lo que sucede es que cuando hago la carga de la función 'loadEmployees' tengo que marcar para poder acceder a 'api.fetchEmployees' la propiedad '@APIActor'.
-Ojo ya tengo los datos cargados en la función 'loadEmployees', ¿ahora como lospongo en la propiedad 'employees' que pertenece al '@MainActor' que es otro distinto a '@APIActor' que esta funcionando en segundo plano, '@MainActor' desta en primer plano, ¿como les paso a la propiedad 'employees'? Pues se tendira que hacer a través de una tarea marcada con el atributo '@MainActor', lo que se esta haciendo es crear un nuevo contexto que usa el '@MainActor' y sale del '@APIActor' por lo que ahora ya se puede hacer el 'self.employees' sin ningún problema. Pero entonces tnedriamos otro error porque la función 'loadEmployees' pertenece como propiedad a '@APIActor' y si yo quiero capturarla no puedo porque la captura semantica no es permitida porque puede ser que debajo del 'Task' alguien  modificase 'loadEmployees' (yo no tengo la garantia de que el Task { @MainActor in ... } se eejcute después o antes de esa modificación porque hya tendria un 'data races'). Entonces la solución es poner entre corchetes el 'loadEmployees' para hacer una copia por valor de loadEmployees para que de igual lo que pase después.
+Que pasa ahora tengo mi `VM (View Model)` que tiene mi `@Observable` y este esta unido al `@MainActor` porque la interfaz va en el `@MainActor` y el array de empleados va en el `@MainActor` porque se va a mostrar en pantalla y la API que es donde voy a recuperar la información que es lo que viene de `APIActor`. <br> <br>
+Lo que sucede es que cuando hago la carga de la función `loadEmployees` tengo que marcar para poder acceder a `api.fetchEmployees` la propiedad `@APIActor`. <br> <br>
+Ojo ya tengo los datos cargados en la función `loadEmployees`, ¿ahora como los pongo en la propiedad `employees` que pertenece al `@MainActor` que es otro distinto a `@APIActor` que esta funcionando en segundo plano, `@MainActor` esta en primer plano, ¿como les paso a la propiedad `employees`? Pues se tendria que hacer a través de una tarea marcada con el atributo `@MainActor`, lo que se esta haciendo es crear un nuevo contexto que usa el `@MainActor` y sale del `@APIActor` por lo que ahora ya se puede hacer el `self.employees` sin ningún problema. <br> <br>
+Pero entonces tnedriamos otro error porque la función `loadEmployees` pertenece como propiedad a `@APIActor` y si yo quiero capturarla no puedo porque la captura semantica no es permitida porque puede ser que debajo del `Task` alguien  modificase `loadEmployees` (yo no tengo la garantia de que el `Task { @MainActor in ... }` se ejecute después o antes de esa modificación porque hay tendría un 'data race'). Entonces la solución es poner entre corchetes el `loadEmployees` para hacer una copia por valor de `loadEmployees` para que de igual lo que pase después.
 
 ```js
 @globalActor
@@ -447,31 +448,51 @@ final class EmployeeStore {
 
 ### Actor principal
 • El actor principal es la instancia de un actor global, que está unido a todos los procesos que se realizan en el hilo principal.
+
 • Como cualquier actor global, puede ser usado como instancia o como atributo marcando, en este caso, la unión al hilo principal (con @MainActor).
+
 • Por un lado permite inyectar cualquier dependencia desde otro contexto de ejecución, directamente al hilo principal, con control de cualquier data race.
+
 • O también permite marcar un closure, tipo de dato, método, clase, struct o incluso un protocolo para que solo pueda ser usado en el hilo principal.
+
 • En esencia, ata el proceso a este hilo impidiendo que ningún dato marcado con él pueda ser usado en cualquier otro contexto.
+
 • Pero no podemos olvidar que todo lo que esté en el MainActor estará en el hilo principal, por lo que puede causar problemas de rendimiento si hacemos una tarea síncrona pesada.
+
 • No obstante, cualquier await que hagamos en un Task, que esté unido al MainActor, buscará su propio contexto de ejecución para realizar la tarea y liberará el hilo principal para otras operaciones encoladas.
+
 • Cuando el proceso asíncrono con await termina, se vuelve a inyectar sobre el hilo principal y se sigue serializando, evitando el data race pero SIN parar el hilo principal.
+
 • De hecho, es igual con cualquier otro actor global, siempre que usemos algo async.
 
 ### El protocolo Sendable
 • El protocolo Sendable es un protocolo que cumple cualquier dato que de forma segura puede pasar su datos entre distintos contextos.
+
 • Esto se consigue garantizando el aislamiento y/o bloqueo del dato entre cuando es accedido para lectura y/o modificado en forma alguna. Mientras se lee o toca el dato, este debe estar bloqueado para que nadie más acceda a él.
+
 • Los structs, enumeraciones y todos los tipos naturales del sistema (Int, String, etc...) son de tipo Sendable, así como muchos de Cocoa Touch como UIView o UIImage que son clases pero tienen sus propiedades aisladas.
+
 • Si creamos una clase y dentro de la misma no hay ninguna propiedad mutable (ningún var), dicha clase podrá conformarse con Sendab le y podrá ser usada sin problema para pasar y/o capturar datos entre distintos contextos.
+
 • Pero si queremos que una clase con una variable (o varias) sean Sendable, tenemos que bloquearlas con garantías para que cumplan el protocolo.
+
 • Las formas son muchas: podemos crear un actor privado dentro de la clase que gestiona la mutabilidad (aunque los accesos serán async).
+
 • O también podemos usar las APIs de NSLock del sistema para crear un patrón setter/ getter aislado por tipos que bloqueo y que se libere en cada lectura o escritura.
+
 • Si usamos iOS 18 otra solución es usar Mutex en la librería Synchronization.
 
 ### Conclusiones
 ¿Hay formas de saltarse todo esto? Sí. Pero estás entrando en un terreno peligroso porque el lenguaje a partir de Swift 6 supone que haces las cosas bien y te vas a encontrar con procesos bloqueados vistas que no funcionan, llamadas a APIs que nunca llegan... anular es SOLO cuando el sistema tiene APis aún no adaptadas.
+
 • Cualquier propiedad o método que nos de igual que pueda sufrir data race o que podamos garantizar que no va a sufrirlo, pero sin una implementación que lo garantice, puede ser marcado con nonisolated (unsafe) y con ello nos dejará hacer lo que queramos. Bajo nuestra responsabilidad y sabiendo que podríamos tener problemas de estabilidad en nuestros desarrollos.
+
 • De igual forma, cualquier clase que necesitemos que sea Sendable, pero no lo sea, con el sufijo @unchecked lo permitirá que pase por una sin serlo realmente.
+
 • En estos próximos meses podremos ver algunas veces estas instrucciones de "anulación" de la concurrencia, mientras ciertas APis se van adaptando, pero siempre sabiendo muy bien a qué nos enfrentamos.
+
 • Hoy, el modo Swift 5 y Swift 6 es elegible. No tenemos por qué pasar a Swift 6 y podemos minimizar el número de warnings.
+
 Pero Apple no se la va a jugar y en Xcode 17 es probable que el modo Swift 6 sea obligatorio, lo que obligaría a todos a adaptar sus apps para primavera de 2026.
 Más vale empezar ya, vaya que nos pille el pájaro enfadado.
 
