@@ -327,7 +327,7 @@ Sigue siendo una clase no tengo que cambiar ninguna linea de código pero en ese
 
 • Usamos `await` para que espere en una `cola serializada` el acceso a la propiedad.
 
-¿Y si tenemos un método que no accede a ninguna variable? Hay que marcarlo como `nonisolated` para que permita ejecutar ese método desde un contexto cualquiera sin tener que estar dentro de un Task o de una función de tipo Async.
+¿Y si tenemos un método que no accede a ninguna variable? Hay que marcarlo como `nonisolated` para que permita ejecutar ese método desde un `contexto` cualquiera sin tener que estar dentro de un `Task` o de una función de `tipo Async`.
 
 ```js
 actor MyActor {
@@ -356,15 +356,22 @@ Task {
 print(myActor.description()) // No requiere await
 ```
 
-### Actores globales (@Globalactor)
+### Actores globales (`@Globalactor`)
 • Un actor global nos permite generar atributos del lenguaje basados en un patrón singleton pero usando un actor en vez de una clase.
-• Puede ser usado como instancia para acceder a las propiedades o métodos del actor que contiene (a través del singleton) o como atributo de cualquier clase, struct, método o propiedad y "atándola" al hilo del actor global.
+
+• Puede ser usado como instancia para acceder a las propiedades o métodos del actor que contiene (a través del singleton) o como atributo de cualquier clase, struct, método o propiedad y "atándola" al hilo del actor global. <br> <br>
 Al hacer esto, estamos impidiendo que nada que no esté atado a dicho actor global pueda ser usado en otro contexto distinto.
+
 • Al atar algo a un actor global, estamos previniendo de forma efectiva un data race, porque estamos aislando este a un hilo.
+
 • Todos los actores funcionan en segundo plano, y actuarán de cara a cualquier elemento anotado como si fueran parte del actor, prescindiendo del uso de await.
+
 • La base de este actor global es el mismo actor como singleton solo que luego permite anotar cualquier cosa como parte del mismo.
+
 • O puede ser otro actor completo, al que metemos a través del singleton para usarlo con propiedades y métodos del mismo que nos permitan reutilizar código más seguro.
+
 • La herencia del contexto del actor global es jerárquica: si marcamos una clase con un actor global, todas sus propiedades y métodos heredarán ese contexto automáticamente, a menos que se especifique lo contrario con nonisolated.
+
 • A diferencia de los actores regulares que solo protegen sus propias propiedades, un actor global puede proteger cualquier código en cualquier parte de la aplicación, proporcionando un mecanismo de sincronización a nivel de sistema.
 
 Esto seria un error porque aunque no se utilice una variable, si podria haberla y como el sistema no lo sabe hasta que se ejecuta daria error
