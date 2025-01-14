@@ -152,6 +152,7 @@ SE PASAR A:
 
 ## Los 3 problemas de la concurrencia
 La concurrencia presenta tres problemas que hay que tener presentes cuando se trabaja:
+<<<<<<< HEAD
 1. `Data race (carreras de datos)`: esto es lo que intentamos evitar con la `concurrencia estricta`. Los dos siguientes puntos son consecuencia de este punto.
 
 2. Inversión de la prioridad.
@@ -167,7 +168,9 @@ La concurrencia presenta tres problemas que hay que tener presentes cuando se tr
 • Los `actores` son un tipo de clase sin herencia que aisla el acceso a todas sus propiedades mutables y a los métodos que las usan.
 
 • Así mismo, el sistema proporciona un atributo de `actor global` fijado al hilo principal: el `@MainActor` (con el que decimos que esa función, método, propiedad, clase, struct van a estar atados al hilo principal). Y la posibilidad de crear nuestros `propios actores globales`.
+
 • Adicionalmente tenemos `un protocolo` que garantiza al sistema que las propiedades mutables de una clase son seguras: `el protocolo Sendable`.
+
 • O podemos usar `APIs de bajo nivel` como `NSLock` o `Mutex`, para bloquear ciertos datos de manera segura, sin tener que hacerlos asíncronos (bloquean el hilo, a diferenca de con `async-await` los hilos no se bloquean se van liberando según el funcionamiento). Y luego poder desbloquearlo con `setters` y `getters`.
 
 ## Data Race (condición de carrera)
