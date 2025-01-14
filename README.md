@@ -65,12 +65,14 @@ Es decir, cuando vayas a `leer o escribir` un dato se debe de `bloquear` para qu
     3. Gestionar el bloqueo de `los datos mutables individualmente`.
 - La herramienta principal para poder hacer esto con `async-await` son los `actores`: clases preparadas para concurrencia (que no soportan herencia) que convierten en asíncrono (casi siempre no bloqueante) el acceso a métodos o propiedades en los mismos y con ello, obligan (con await) a esperar a todo el que quiera usarlo si alguien ya lo usa.
 
-* `Definicion de actores`: maneja el acceso seguro a datos compartidos en un entorno concurrente, solo pueden ser accedidos desde un contexto asíncrono, esto obliga al código consumidor a usar await, asegurando que el acceso se coordine correctamente. Internamente, los actores aseguran que solo una tarea pueda acceder a su estado en un momento dado, sin necesidad de que el desarrollador maneje bloqueos manuales, al delegar la gestión del acceso concurrente al sistema de ejecución de Swift. Si el actor ya está ocupado ejecutando una tarea, cualquier otra tarea que intente acceder a él será pausada (suspendida) hasta que el actor esté disponible. Sin embargo, esto no bloquea los hilos en sí, ya que las tareas que esperan son manejadas por el sistema de ejecución asíncrona.
+* `Definición de actores`: maneja el acceso seguro a datos compartidos en un entorno concurrente, solo pueden ser accedidos desde un contexto asíncrono, esto obliga al código consumidor a usar await, asegurando que el acceso se coordine correctamente. Internamente, los actores aseguran que solo una tarea pueda acceder a su estado en un momento dado, sin necesidad de que el desarrollador maneje bloqueos manuales, al delegar la gestión del acceso concurrente al sistema de ejecución de Swift. Si el actor ya está ocupado ejecutando una tarea, cualquier otra tarea que intente acceder a él será pausada (suspendida) hasta que el actor esté disponible. Sin embargo, esto no bloquea los hilos en sí, ya que las tareas que esperan son manejadas por el sistema de ejecución asíncrona.
 
 ## Tipos de tareas y funcionamiento
-1. Hilo principal (main thread): se encarga de la interfaz de usuario. Ejecuta las tareas de forma síncrona y serializada. Ejecuta la mayoria de operaciones que yo programo cuando no creo un contexto distinto.
+1. `Hilo principal (main thread)`: se encarga de la interfaz de usuario. Ejecuta las tareas de `forma síncrona y serializada`. Ejecuta la mayoria de operaciones que yo programo cuando no creo un contexto distinto.
 Este hilo tiene 5 colas, en las que yo puedo poner cosas para que se inyecten al hilo principal.
-¿Como funcionan estas colas? Imaginamos que tenemos 3 tareas que estan dentro del hilo principal.
+
+
+¿Cómo funcionan estas colas? Imaginamos que tenemos 3 tareas que estan dentro del hilo principal.
 
 <div align="center">
   <img src="img_explicacion/IMAGEN_1.png" alt="Imagen 1" width="600">
