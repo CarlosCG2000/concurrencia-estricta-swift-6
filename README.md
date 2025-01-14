@@ -1,7 +1,7 @@
 
 # Concurrencia Estricta en Swift 6
 
-RECORDATORIO INICIAL:
+## RECORDATORIO INICIAL:
 | **Término**      | **¿Bloquea?**        | **Descripción**                                                                                       |
 |-------------------|----------------------|-------------------------------------------------------------------------------------------------------|
 | **Síncrono**      | Generalmente sí      | El hilo espera a que la operación termine antes de continuar.                                         |
@@ -19,6 +19,7 @@ RECORDATORIO INICIAL:
 
 ## ¿Qué es la concurrencia de procesos y por qué es importante?
 1. La `concurrencia` es ejecutar más de una tarea a la vez.
+
 2. Su funcionamiento se basa en el concepto de `hilo (o thread)` donde cada hilo de ejecución de CPU o GPU ejecutan una tarea de forma independiente.
 Tenemos un hilo que hace una ejecución, hay que pensar en la concurrencia como las vías de un tren, donde pueden circular varios trenes a la vez en diferentes vías en la misma dirección pero nunca más de uno en la misma vía al mismo tiempo. Es decir las vías son los hilos y los trenes las tareas, solo puede a ver un tarea en un hilo en un mismo instante pero pueden a ver varias tareas en varios hilos en ejecución en la misma dirección (incluso en paralelo) pero cada uno en un hilo diferente. Esa en la cuestión no puede estar dos tareas en el mismo hilo, solo una hilo puede albergar una única tarea en ejecución. Además existe una restricción básica que es que un mismo pasajero no puede ir al mismo tiempo en dos trenes que van en distintas vías.
 La concurrencia estricta evita eso, que un mismo pasajero (dato) este a al vez en distintas vias (hilos) y trenes (tareas) a la vez que van en la misma dirección, porque eso puede provocar errores e insconsistencia.
@@ -81,7 +82,7 @@ Este hilo tiene 5 colas, en las que yo puedo poner cosas para que se inyecten al
 * La tarea 2 espera a que la 1 finalice.
 * Las tareas se ejecutan secuencialmente, una tras otra: serializadamente.
 * El hilo principal tiene 5 colas, que sirven para introducir tareas serializadas (individuales).
-* Si marcamos una clase, struct, enumeración, método o propiedad como `@MainActor` lo estamos "atando" al `main thread` por lo que dicho método, propiedad o instancia que sea, solo será accesible en el hilo principal o instancia que sea, solo será accesible en el hilo principal y nada más y como hemos dicho este es hilo es ecuencial y nos quita el problema de los data race.
+* Si marcamos una clase, struct, enumeración, método o propiedad como `@MainActor` lo estamos "atando" al `main thread` por lo que dicho método, propiedad o instancia que sea, solo será accesible en el hilo principal o instancia que sea, solo será accesible en el hilo principal y nada más y como hemos dicho este es hilo es secuencial y nos quita el problema de `los data race`.
 * Si yo tengo una operación realizandola en segundo plano. Por ejemplo una tarea 4 que va a poner algo en el hilo principal pero estoy trabajando en concurrencia, lo que sucede es que esa tarea 4, alentrar en una cola se inyecta antes de la siguiente tarea que elhilo principal esta realizando.Por lo que el hilo principal cambia el orden de las tareas y coloca la  nueva tarea que cuando acabe seguira con la siguente.
 * De esta forma respeta la serialización del hilo (tareas una tras otra) pero puede ejecutar tareas "no esperadas".
 * Esto no afecta al rendimiento porque se espera que dichas tareas inyectadas sean siempre ligeras para el sistema.
