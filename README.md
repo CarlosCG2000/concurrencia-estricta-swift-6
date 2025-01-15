@@ -110,9 +110,9 @@ Este hilo tiene 5 colas, en las que yo puedo poner cosas para que se inyecten al
 
 <div align="center">
   <img src="img_explicacion/IMAGEN_3.png" alt="Imagen 3" width="600">
-</div>
+</div> <br>
 
-* Esto no afecta al rendimiento porque se espera que dichas tareas inyectadas sean siempre ligeras para el sistema. <br> <br>
+* Esto no afecta al rendimiento porque se espera que dichas tareas inyectadas sean siempre ligeras para el sistema.
 
 Hay que entender que todos los hilos y no solo el principal sino cualquier hilo en segundo plano funcionan de manera serializada (una tras otra sin superponerse).
 - Todos los `hilos` funcionan de `manera serializada`, ejecutan las tareas una a una, incluido la principal.
@@ -121,7 +121,7 @@ Hay que entender que todos los hilos y no solo el principal sino cualquier hilo 
 
 <div align="center">
   <img src="img_explicacion/IMAGEN_4.png" alt="Imagen 4" width="600">
-</div> <br>
+</div>
 
 - El `hilo principal` es el encargado de ejecutar la interfaz de la app. <br> <br>
 Lo que no podemos olvidar es que no podemos poner `tareas lentas o pesadas` sobre el hilo principal porque estamos `parando la interfaz de la aplicación`.
