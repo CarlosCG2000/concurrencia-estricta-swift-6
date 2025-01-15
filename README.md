@@ -464,6 +464,7 @@ Si APIActor fuera un actor regular:
 1.	Cada instancia tendría su propia cola serializada. Si diferentes componentes de la aplicación instancian `APIActor`, las solicitudes API no se protegerían entre sí.
 2.	No se podría garantizar que todas las operaciones relacionadas con la API estén `centralizadas` y `serializadas`, lo que podría provocar problemas de concurrencia, como datos inconsistentes o solicitudes conflictivas.
 
+#### Resumen
 Este diseño aprovecha las ventajas de los actores globales (APIActor) para garantizar que todas las operaciones relacionadas con la API sean seguras y serializadas. La combinación con MainActor en la clase EmployeeStore asegura que las actualizaciones de la interfaz de usuario sean seguras y correctas. Este enfoque es ideal para aplicaciones donde las solicitudes API y los datos compartidos deben manejarse de forma concurrente, pero con seguridad.
 
 ### Actor principal
