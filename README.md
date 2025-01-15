@@ -412,13 +412,14 @@ Ojo ya tengo los datos cargados en la función `loadEmployees`, ¿ahora como los
 Pero entonces tendriamos otro error porque la función `loadEmployees` pertenece como propiedad a `@APIActor` y si yo quiero capturarla no puedo porque la captura semantica no es permitida porque puede ser que debajo del `Task` alguien  modificase `loadEmployees` (yo no tengo la garantia de que el `Task { @MainActor in ... }` se ejecute después o antes de esa modificación porque hay tendría un 'data race'). Entonces la solución es poner entre corchetes el `loadEmployees` para hacer una copia por valor de `loadEmployees` para que de igual lo que pase después.
 
 ```js
-@globalActor // Sistema garantiza que todas las operaciones etiquetadas con @APIActor se ejecuten dentro del contexto aislado de este actor.
+// Actor 'APIActor'
+@globalActor // Sistema que garantiza que todas las operaciones etiquetadas con '@APIActor' se ejecuten dentro del contexto aislado de este actor.
 actor APIActor {
-    static let shared = APIActor() // Al ser un actor global. Solo hay una instancia única de APIActor, accesible a través de `APIActor.shared`
+    static let shared = APIActor() // Al ser un actor global. Solo hay una instancia única de 'APIActor', accesible a través de `APIActor.shared`
 }
 
 // Clase que usa el actor global
-@APIActor // Toda la clase EmployeeAPI se ejecuta en el contexto del actor global APIActor.
+@APIActor // Toda la clase 'EmployeeAPI' se ejecuta en el contexto del actor global 'APIActor'.
 // Esto asegura que cualquier acceso a los métodos o propiedades de esta clase esté serializado y no ocurra de forma concurrente.
 final class EmployeeAPI {
     // Método que realiza una operación de red para obtener datos de empleados.
@@ -430,24 +431,24 @@ final class EmployeeAPI {
 }
 
 // Clase para almacenar los datos de empleados
-// @Observable: Permite que esta clase sea observada por las vistas con SwiftUI.
+// '@Observable': permite que esta clase sea observada por las vistas con SwiftUI.
 // Esto facilita la actualización automática de la interfaz de usuario cuando cambian los datos.
-// @MainActor: Asegura que todas las operaciones de esta clase se ejecuten en el hilo principal,
+// '@MainActor': asegura que todas las operaciones de esta clase se ejecuten en el hilo principal,
 // lo cual es esencial para manipular la interfaz de usuario en Swift.
 @Observable @MainActor
 final class EmployeeStore {
     var employees: [Employees] // Almacena la lista de empleados cargados.
-    let api: EmployeeAPI // Instancia de EmployeeAPI, que se usará para obtener los datos de empleados.
+    let api: EmployeeAPI // Instancia de 'EmployeeAPI', que se usará para obtener los datos de empleados.
 
     // Método para cargar empleados
-    // Este método se ejecuta en el contexto del actor global APIActor,
+    // Este método se ejecuta en el contexto del actor global 'APIActor',
     // lo que garantiza que todas las operaciones relacionadas con la API estén serializadas y no haya conflictos de concurrencia.
     @APIActor
     func loadEmployees() async {
         do {
-            let loadedEmployees = try await api.fetchEmployees() // Dado que ambos están dentro del contexto de APIActor, esto se realiza de manera segura
+            let loadedEmployees = try await api.fetchEmployees() // Dado que ambos están dentro del contexto de 'APIActor', esto se realiza de manera segura
 
-            // Cuando los datos están disponibles (loadedEmployees), usa un bloque de Task con @MainActor para asignar los empleados al estado (self.employees)
+            // Cuando los datos están disponibles (loadedEmployees), usa un bloque de Task con '@MainActor' para asignar los empleados al estado (self.employees)
             Task { @MainActor [loadedEmployees] in
                 self.employees = loadedEmployees
             }
