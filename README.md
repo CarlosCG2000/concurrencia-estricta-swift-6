@@ -388,8 +388,8 @@ class APIActor {
 ```
 
 Solución (cambiar `class` por `actor`): <br> <br>
-Y además ahora si quiero acceder al método 'fetchEmployees' tengo que acceder con un `await` porque es una instancia de un `actor`. <br> <br>
-Pero hasta que vengo y le pongo arriba `globalActor` en ese momento yo puedo llevarme el método 'fetchEmployees' a una clase distinta y puedo marcar esa clase como `@APIActor` (`@nombreActor`). Esto seria como si se metieran dentro del actor `APIActor` dentro de la protección del método 'shared', pero con la ventaja de que el método 'fetchEmployees' puede acceder a las propiedades que pertenezcan al mismo contexto `APIActor` sin tener que poner `await`, lo hace de forma segura.
+Y además ahora si quiero acceder al método `fetchEmployees` tengo que acceder con un `await` porque es una instancia de un `actor`. <br> <br>
+Pero hasta que vengo y le pongo arriba `globalActor` en ese momento yo puedo llevarme el método `fetchEmployees` a una clase distinta y puedo marcar esa clase como `@APIActor` (`@nombreActor`). Esto seria como si se metieran dentro del actor `APIActor` dentro de la protección del método 'shared', pero con la ventaja de que el método `fetchEmployees` puede acceder a las propiedades que pertenezcan al mismo contexto `APIActor` sin tener que poner `await`, lo hace de forma segura.
 
 ```js
 @globalActor
