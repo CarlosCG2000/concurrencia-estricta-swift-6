@@ -90,7 +90,7 @@ Este hilo tiene 5 colas, en las que yo puedo poner cosas para que se inyecten al
 
 <div align="center">
   <img src="img_explicacion/IMAGEN_1.png" alt="Imagen 1" width="600">
-</div> <br>
+</div>
 
 * La tarea 2 espera a que la 1 finalice.
 
@@ -140,7 +140,7 @@ SE PASAR A:
 
 <div align="center">
   <img src="img_explicacion/IMAGEN_6.png" alt="Imagen 6" width="600">
-</div> <br>
+</div>
 
 - Las `buenas prácticas` nos dicen que tenemos `mover esa tarea lenta` a otro hilo funciona la UI de mejor manera ya que el hilo principal puede seguir avanzando sin problemas.
 
