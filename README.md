@@ -430,21 +430,23 @@ final class EmployeeAPI {
 }
 
 // Clase para almacenar los datos de empleados
-// @Observable: Permite que esta clase sea observada por las vistas con SwiftUI. Esto facilita la actualización automática de la interfaz de usuario cuando cambian los datos.
-// @MainActor: Asegura que todas las operaciones de esta clase se ejecuten en el hilo principal, lo cual es esencial para manipular la interfaz de usuario en Swift.
+// @Observable: Permite que esta clase sea observada por las vistas con SwiftUI.
+// Esto facilita la actualización automática de la interfaz de usuario cuando cambian los datos.
+// @MainActor: Asegura que todas las operaciones de esta clase se ejecuten en el hilo principal,
+// lo cual es esencial para manipular la interfaz de usuario en Swift.
 @Observable @MainActor
 final class EmployeeStore {
     var employees: [Employees] // Almacena la lista de empleados cargados.
     let api: EmployeeAPI // Instancia de EmployeeAPI, que se usará para obtener los datos de empleados.
 
     // Método para cargar empleados
-    // Este método se ejecuta en el contexto del actor global APIActor, lo que garantiza que todas las operaciones relacionadas con la API estén serializadas y no haya conflictos de concurrencia.
+    // Este método se ejecuta en el contexto del actor global APIActor,
+    // lo que garantiza que todas las operaciones relacionadas con la API estén serializadas y no haya conflictos de concurrencia.
     @APIActor
     func loadEmployees() async {
         do {
             let loadedEmployees = try await api.fetchEmployees() // Dado que ambos están dentro del contexto de APIActor, esto se realiza de manera segura
 
-            // Cuando los datos están disponibles (loadedEmployees), usa un bloque de Task con @MainActor para asignar los empleados al estado (self.employees)
             // Cuando los datos están disponibles (loadedEmployees), usa un bloque de Task con @MainActor para asignar los empleados al estado (self.employees)
             Task { @MainActor [loadedEmployees] in
                 self.employees = loadedEmployees
@@ -458,8 +460,8 @@ final class EmployeeStore {
 
 ¿Por qué no usar un actor regular aquí?
 Si APIActor fuera un actor regular:
-1.	Cada instancia tendría su propia cola serializada. Si diferentes componentes de la aplicación instancian APIActor, las solicitudes API no se protegerían entre sí.
-2.	No se podría garantizar que todas las operaciones relacionadas con la API estén centralizadas y serializadas, lo que podría provocar problemas de concurrencia, como datos inconsistentes o solicitudes conflictivas.
+1.	Cada instancia tendría su propia cola serializada. Si diferentes componentes de la aplicación instancian `APIActor`, las solicitudes API no se protegerían entre sí.
+2.	No se podría garantizar que todas las operaciones relacionadas con la API estén `centralizadas` y `serializadas`, lo que podría provocar problemas de concurrencia, como datos inconsistentes o solicitudes conflictivas.
 
 ### Actor principal
 • El `actor principal` es la instancia de un `actor global`, que está unido a todos los procesos que se realizan en el `hilo principal`.
